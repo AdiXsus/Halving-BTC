@@ -98,9 +98,32 @@ async def start_bot():
     # Uruchamiamy pętlę aktualizującą nazwę kanału
     asyncio.create_task(update_channel(client))
 
+  @client.event
+  async def on_message(message):
+    if message.author.bot:
+      return
+
+    if client.user in message.mentions:
+      halving_date = await get_halving_date()
+      now = datetime.utcnow()
+      time_remaining = halving_date - now
+
+      if time_remaining.total_seconds() < 0:
+        await message.channel.send("Halving już nastąpił.")
+      else:
+        days = time_remaining.days
+        hours, remainder = divmod(time_remaining.seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+
+        time_remaining_str = f"{days} dni, {hours} godzin, {minutes} minut"
+        await message.channel.send(
+            f"Bitcoin Halving Countdown: **{time_remaining_str}**")
+
   await client.start(TOKEN)
+
 
 keep_alive()
 
 # Uruchamiamy bota
 asyncio.run(start_bot())
+
