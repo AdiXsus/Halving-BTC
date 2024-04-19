@@ -33,7 +33,7 @@ async def get_halving_date():
     halving_date_utc = datetime.strptime(bitcoin_data['halvening_time'], '%Y-%m-%d %H:%M:%S')
     
     # Dodajemy dwie godziny do daty UTC, aby przekształcić ją do GMT+2
-    halving_date_gmt2 = halving_date_utc + timedelta(hours=-2)
+    halving_date_gmt2 = halving_date_utc + timedelta(hours=0)
     
     return halving_date_gmt2
 
