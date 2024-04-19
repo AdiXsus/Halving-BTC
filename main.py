@@ -25,14 +25,18 @@ ALERT_CHANNEL_ID = int(os.getenv("DISCORD_ALERT_CHANNEL_ID"))
 alert_sent = False
 
 
-# Funkcja do pobierania daty następnego halvingu Bitcoin z API
+# Funkcja do pobierania daty następnego halvingu Bitcoin z API, uwzględniająca GMT+2
 async def get_halving_date():
-  response = requests.get(API_URL)
-  data = response.json()
-  bitcoin_data = data['data']['bitcoin']
-  halving_date = datetime.strptime(bitcoin_data['halvening_time'],
-                                   '%Y-%m-%d %H:%M:%S')
-  return halving_date
+    response = requests.get(API_URL)
+    data = response.json()
+    bitcoin_data = data['data']['bitcoin']
+    halving_date_utc = datetime.strptime(bitcoin_data['halvening_time'], '%Y-%m-%d %H:%M:%S')
+    
+    # Dodajemy dwie godziny do daty UTC, aby przekształcić ją do GMT+2
+    halving_date_gmt2 = halving_date_utc + timedelta(hours=-2)
+    
+    return halving_date_gmt2
+
 
 
 # Funkcja zmieniająca status bota na niestandardowy
@@ -53,7 +57,7 @@ async def update_status(client):
     hours, remainder = divmod(time_remaining.seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
 
-    status_message = f"{days} dni, {hours} godzin, {minutes} minut"
+    status_message = f"{hours} godzin, {minutes} minut"
     await ustaw_status(client, status_message)
 
     # Sprawdzamy, czy pozostało dokładnie 10 minut
@@ -115,7 +119,7 @@ async def start_bot():
         hours, remainder = divmod(time_remaining.seconds, 3600)
         minutes, seconds = divmod(remainder, 60)
 
-        time_remaining_str = f"{days} dni, {hours} godzin, {minutes} minut"
+        time_remaining_str = f"{hours} godzin, {minutes} minut"
         await message.channel.send(
             f"Bitcoin Halving Countdown: **{time_remaining_str}**")
 
