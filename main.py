@@ -57,7 +57,7 @@ async def update_status(client):
     hours, remainder = divmod(time_remaining.seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
 
-    status_message = f"{hours} godzin, {minutes} minut"
+    status_message = f"{minutes} minut"
     await ustaw_status(client, status_message)
 
     # Sprawdzamy, czy pozostało dokładnie 10 minut
@@ -119,7 +119,7 @@ async def start_bot():
         hours, remainder = divmod(time_remaining.seconds, 3600)
         minutes, seconds = divmod(remainder, 60)
 
-        time_remaining_str = f"{hours} godzin, {minutes} minut"
+        time_remaining_str = f"{minutes} minut"
         await message.channel.send(
             f"Bitcoin Halving Countdown: **{time_remaining_str}**")
 
